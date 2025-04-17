@@ -40,6 +40,7 @@ const Login = () => {
 
   const onSubmit = async (values) => {
     const response = await UserLogin(values);
+    console.log("the response is", response);
 
     if (response.success) {
       toast.success(response.message);
