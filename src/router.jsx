@@ -9,7 +9,7 @@ const AuthenticationLayout = lazy(() =>
   import("./layout/AuthenticationLayout")
 );
 const Profile = lazy(() => import("./pages/Profile"));
-const CreateProject = lazy(() => import("./pages/CreateProject"));
+const CreateProject = lazy(() => import("./pages/createProject/CreateProject"));
 
 export const router = createBrowserRouter([
   {
