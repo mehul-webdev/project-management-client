@@ -41,7 +41,7 @@ const DateInput = ({ field, label, placeholder, description, error }) => {
               setOpen(false); // close popover
             }}
             disabled={(date) =>
-              date > new Date() || date < new Date("1900-01-01")
+              date <= new Date() || date <= new Date("2020-01-01")
             }
             initialFocus
           />

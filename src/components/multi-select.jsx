@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 
@@ -28,17 +28,18 @@ const MultiSelect = ({
   setHandleMultiSelectOptions,
 }) => {
   const [open, setOpen] = React.useState(false);
+  const [multiSelectValues, setMultiSelectValues] = useState([]);
   const showSelectedOptions = 2;
   const ShowValues = () => {
     let count = 0;
 
     return (
       <span className="flex flex-row flex-wrap gap-2">
-        {value.length > 0 && (
+        {multiSelectValues.length > 0 && (
           <>
-            {value.map((val, index) => {
+            {multiSelectValues.map((val, index) => {
               if (index < showSelectedOptions) {
-                return <Badge>{val}</Badge>;
+                return <Badge key={val}>{val}</Badge>;
               } else {
                 count++;
               }
@@ -53,10 +54,13 @@ const MultiSelect = ({
 
   function handleSetValues(currentValue) {
     let newValues;
-    if (value.includes(currentValue)) {
-      newValues = value.filter((val) => val !== currentValue);
+
+    if (value.includes(currentValue.storeData)) {
+      newValues = value.filter((val) => val !== currentValue.storeData);
+      setMultiSelectValues((prev) => prev !== currentValue.value);
     } else {
-      newValues = [...value, currentValue];
+      newValues = [...value, currentValue.storeData];
+      setMultiSelectValues((prev) => [...prev, currentValue.value]);
     }
 
     onChange(newValues);
@@ -71,7 +75,7 @@ const MultiSelect = ({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger>
+      <PopoverTrigger className="w-full">
         <Button
           variant={error ? "error" : "outline"}
           role="combobox"
@@ -87,8 +91,8 @@ const MultiSelect = ({
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent align="start" className="p-0 w-full">
-        <Command>
+      <PopoverContent align="start" className="p-0 width-[500px]">
+        <Command className="w-full">
           <CommandInput
             placeholder={searchPlaceHolder || "Please Select"}
             className="h-9"
@@ -103,11 +107,11 @@ const MultiSelect = ({
                   <CommandItem
                     key={user.value}
                     value={user.value}
-                    onSelect={() => handleSetValues(user.value)}
+                    onSelect={() => handleSetValues(user)}
                     className="flex gap-2 items-center"
                   >
                     <Checkbox
-                      checked={value.includes(user.value)}
+                      checked={value.includes(user.storeData)}
                       className="pointer-events-none"
                     />
                     <span className="text-sm">{user.label}</span>

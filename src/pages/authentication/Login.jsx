@@ -16,8 +16,9 @@ import { Separator } from "@/components/ui/separator";
 import { FaGoogle } from "react-icons/fa";
 import ProjectManagementImage from "../../assets/project-management.avif";
 import { UserLogin } from "@/api/authentication";
-import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { updateToaster } from "@/store/uiSlice";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -29,6 +30,7 @@ const formSchema = z.object({
 
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -40,13 +42,22 @@ const Login = () => {
 
   const onSubmit = async (values) => {
     const response = await UserLogin(values);
-    console.log("the response is", response);
 
     if (response.success) {
-      toast.success(response.message);
+      dispatch(
+        updateToaster({
+          type: "success",
+          message: response.message,
+        })
+      );
       navigate("/");
     } else {
-      toast.error(response.message);
+      dispatch(
+        updateToaster({
+          type: "success",
+          message: response.message,
+        })
+      );
     }
   };
 

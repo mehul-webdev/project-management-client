@@ -33,6 +33,8 @@ import { useDispatch } from "react-redux";
 import { handleLogout } from "@/store/authentication";
 import { HandleUserLogout } from "@/api/authentication";
 import { useTheme } from "@/context/ThemeProvider";
+import { toast } from "sonner";
+import { getInitials } from "@/lib/utils";
 
 export function NavUser({ user }) {
   const { isMobile } = useSidebar();
@@ -40,21 +42,15 @@ export function NavUser({ user }) {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
 
-  function getInitials(name) {
-    if (!name) return "";
-    const words = name.trim().split(" ");
-    if (words.length === 1) {
-      return words[0][0].toUpperCase();
-    }
-    return words[0][0].toUpperCase() + words[1][0].toUpperCase();
-  }
-
   async function handleClickLogout() {
     const response = await HandleUserLogout();
 
     if (response.success) {
       dispatch(handleLogout());
+      toast.success(response.message);
       navigate("/login");
+    } else {
+      toast.error(response.message);
     }
   }
 

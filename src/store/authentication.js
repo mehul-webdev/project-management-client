@@ -10,7 +10,7 @@ const INITIAL_STATE = {
 export const checkUserLoggedIn = createAsyncThunk(
   "auth/checkUserLoggedIn",
   async () => {
-    const response = HandleCheckUserLoggedIn();
+    const response = await HandleCheckUserLoggedIn();
     return response;
   }
 );

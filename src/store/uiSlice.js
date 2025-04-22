@@ -29,6 +29,6 @@ const uiSlice = createSlice({
 
 // Export actions
 
-export const { updateToaster } = uiSlice.actions;
+export const { updateToaster, clearToaster } = uiSlice.actions;
 
 export default uiSlice.reducer;

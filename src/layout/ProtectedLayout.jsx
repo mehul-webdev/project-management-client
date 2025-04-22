@@ -15,11 +15,14 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 import { checkUserLoggedIn } from "@/store/authentication";
+import { clearToaster } from "@/store/uiSlice";
 
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
+import { toast } from "sonner";
 
 let isInitial = true;
 
@@ -27,6 +30,7 @@ const ProtectedLayout = () => {
   const dispatch = useDispatch();
 
   const { user, loading } = useSelector((state) => state.auth);
+  const { type, message } = useSelector((state) => state.ui.toaster);
 
   useEffect(() => {
     if (isInitial) {
@@ -38,6 +42,17 @@ const ProtectedLayout = () => {
       isInitial = true;
     };
   }, [dispatch]);
+
+  useEffect(() => {
+    if (type && typeof toast[type] === "function" && message) {
+      console.log("the type is opro", type, message);
+      toast[type](message);
+    }
+
+    return () => {
+      dispatch(clearToaster());
+    };
+  }, [type, message, dispatch]);
 
   if (loading) {
     return <LoadingPage />;
@@ -51,6 +66,7 @@ const ProtectedLayout = () => {
     <>
       <SidebarProvider>
         <AppSidebar />
+        <Toaster position="top-right" />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2">
             <div className="flex items-center gap-2 px-4">

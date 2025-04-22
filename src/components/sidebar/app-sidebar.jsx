@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   BookOpen,
   Bot,
@@ -31,12 +31,18 @@ import { NavProjects } from "./nav-projects";
 import { NavUser } from "./nav-user";
 
 import { NavFavorites } from "./nav-favorites";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getSidebarProjectNames } from "@/store/projects";
 
+let isInitial = true;
 export function AppSidebar(props) {
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  const { data: sidebarProjectNames } = useSelector(
+    (state) => state.projects.sidebarProjectNames
+  );
 
-  const data = {
+  const sidebarNavData = {
     user: user,
     navMain: [
       {
@@ -56,9 +62,20 @@ export function AppSidebar(props) {
         icon: Sparkles,
       },
     ],
-    projects: [],
+    projects: sidebarProjectNames,
     favorites: [],
   };
+
+  useEffect(() => {
+    if (isInitial) {
+      dispatch(getSidebarProjectNames());
+      isInitial = false;
+    }
+
+    return () => {
+      isInitial = true;
+    };
+  }, [dispatch]);
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -80,11 +97,13 @@ export function AppSidebar(props) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavFavorites favorites={data.favorites} />
-        <NavProjects projects={data.projects} />
+        <NavMain items={sidebarNavData.navMain} />
+        <NavFavorites favorites={sidebarNavData.favorites} />
+        <NavProjects projects={sidebarNavData.projects} />
       </SidebarContent>
-      <SidebarFooter>{user && <NavUser user={data.user} />}</SidebarFooter>
+      <SidebarFooter>
+        {user && <NavUser user={sidebarNavData.user} />}
+      </SidebarFooter>
     </Sidebar>
   );
 }

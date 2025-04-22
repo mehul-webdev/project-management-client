@@ -6,16 +6,18 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "../customShadcnUi/dropdown-menu";
+
 import {
+  useSidebar,
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar";
+} from "../ui/sidebar";
+import { Link } from "react-router-dom";
 
 export function NavProjects({ projects }) {
   const { isMobile } = useSidebar();
@@ -30,9 +32,9 @@ export function NavProjects({ projects }) {
         {projects.length !== 0 && (
           <>
             {projects.map((item) => (
-              <SidebarMenuItem key={item.name}>
-                <SidebarMenuButton asChild>
-                  <span>{item.name}</span>
+              <SidebarMenuItem key={item._id}>
+                <SidebarMenuButton>
+                  <span>{item.projectName}</span>
                 </SidebarMenuButton>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -46,10 +48,12 @@ export function NavProjects({ projects }) {
                     side={isMobile ? "bottom" : "right"}
                     align={isMobile ? "end" : "start"}
                   >
-                    <DropdownMenuItem>
-                      <Folder className="text-muted-foreground" />
-                      <span>View Project</span>
-                    </DropdownMenuItem>
+                    <Link to={`/project/${item._id}`}>
+                      <DropdownMenuItem>
+                        <Folder className="text-muted-foreground" />
+                        <span>View Project</span>
+                      </DropdownMenuItem>
+                    </Link>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem>
                       <Trash2 className="text-muted-foreground" />

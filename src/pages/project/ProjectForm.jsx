@@ -19,6 +19,11 @@ import {
 import { GetUsers } from "@/api/users";
 import { useDispatch } from "react-redux";
 import { updateToaster } from "@/store/uiSlice";
+import { addNewProject } from "@/api/projects";
+import { Loader } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { getSidebarProjectNames } from "@/store/projects";
 
 const formSchema = z.object({
   projectName: z.string().min(2, {
@@ -38,14 +43,13 @@ const formSchema = z.object({
   projectEndDate: z.date({
     message: "Date is required.",
   }),
-  users: z
-    .array(z.string().email("Invalid email"))
-    .min(1, "Please select at least one user"),
+  projectMembers: z.array(z.string()).min(1, "Please select at least one user"),
 });
 
 const ProjectForm = () => {
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
+  const [loadingFormSubmit, setLoadingFormSubmit] = useState(false);
   const [handleMultiSelectOptions, setHandleMultiSelectOptions] = useState([]);
   const [multiSelectInputText, setMultiSelectInputText] = useState("");
   const form = useForm({
@@ -59,7 +63,7 @@ const ProjectForm = () => {
     },
   });
 
-  function onSubmit(values) {
+  async function onSubmit(values) {
     const result = formSchema.safeParse(values);
 
     if (!result.success) {
@@ -73,8 +77,21 @@ const ProjectForm = () => {
       return;
     }
 
-    // Success
-    console.log("Valid data:", result.data);
+    // Form Submit Function
+    try {
+      setLoadingFormSubmit(true);
+      const response = await addNewProject(values);
+
+      if (response.success) {
+        toast.success(response.message);
+        dispatch(getSidebarProjectNames());
+        navigate(`/project/${response.id}`);
+      }
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setLoadingFormSubmit(false);
+    }
   }
 
   const handleSelectSearch = useCallback(
@@ -149,7 +166,7 @@ const ProjectForm = () => {
                   label="Project Start Date"
                   form={form}
                   placeholder="Please select start date"
-                  error={!!form.formState.errors.users}
+                  error={!!form.formState.errors.projectStartDate}
                 />
               )}
             />
@@ -164,7 +181,7 @@ const ProjectForm = () => {
                   label="Project End Date"
                   form={form}
                   placeholder="Please select end date"
-                  error={!!form.formState.errors.users}
+                  error={!!form.formState.errors.projectStartDate}
                 />
               )}
             />
@@ -173,7 +190,7 @@ const ProjectForm = () => {
 
         <FormField
           control={form.control}
-          name="users"
+          name="projectMembers"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Users</FormLabel>
@@ -196,7 +213,9 @@ const ProjectForm = () => {
           )}
         />
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit" disabled={loadingFormSubmit}>
+          {!loadingFormSubmit ? "Submit" : <Loader />}
+        </Button>
       </form>
     </Form>
   );
