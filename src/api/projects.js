@@ -26,3 +26,12 @@ export const getProjectDetails = async (id) => {
     return err?.response?.data || err.message;
   }
 };
+
+export const addProjectMembers = async (values) => {
+  try {
+    const response = await axiosInstance.post(`/project/add-members`, values);
+    return response.data;
+  } catch (err) {
+    return err?.response?.data || err.message;
+  }
+};
